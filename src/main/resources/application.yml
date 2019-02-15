@@ -6,6 +6,10 @@ spring:
   profiles:
     active: ${env}
 
+feign:
+  hystrix:
+    enabled: true
+
 #admin client config
 management:
   endpoint:
