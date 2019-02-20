@@ -1,23 +1,13 @@
 #!/usr/bin/env bash
-
-BUILD_NUMBER=$1
-env=$2
 serviceName="organization-service"
-running=`docker ps | grep ${serviceName} | awk '{print $1}'`
-if [ ! -z "$running" ]; then
-    docker stop $running
-fi
+BUILD_NUMBER=$1
 
-container=`docker ps -a | grep ${serviceName} | awk '{print $1}'`
-if [ ! -z "$container" ]; then
-    docker rm $container -f
-fi
+echo "start build docker image ..."
+docker build -t ${serviceName}:${BUILD_NUMBER} .
 
-imagesid=`docker images|grep -i ${serviceName}|awk '{print $3}'`
-if [ ! -z "$imagesid" ]; then
-    docker rmi $imagesid -f
-fi
+echo "create docker images dir ..."
+mkdir -p ./build/${serviceName}-${BUILD_NUMBER}
 
-docker build -t ${serviceName}:$BUILD_NUMBER .
-
-docker run --env env=${env} -it -d -p 4444:4444 --name ${serviceName} ${serviceName}:$BUILD_NUMBER
+echo "save docker image ${serviceName}_${BUILD_NUMBER}.tar ..."
+docker save -o ./build/${serviceName}-${BUILD_NUMBER}/${serviceName}_${BUILD_NUMBER}.tar ${serviceName}:${BUILD_NUMBER}
+cp ./docker-deploy.sh ./build/${serviceName}-${BUILD_NUMBER}
