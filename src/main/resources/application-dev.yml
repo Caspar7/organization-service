@@ -1,5 +1,5 @@
 server:
-  address: localhost
+  address: ${host_ip}
   port: 4444
 eureka:
   instance:
